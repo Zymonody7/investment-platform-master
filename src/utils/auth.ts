@@ -33,9 +33,13 @@ export function getToken(): DataInfo<number> {
  * 将`username`、`roles`、`refreshToken`、`expires`这四条信息放在key值为`user-info`的sessionStorage里（浏览器关闭自动销毁）
  */
 export function setToken(data: DataInfo<Date>) {
+  console.log(data);
   let expires = 0;
-  const { accessToken, refreshToken } = data;
-  expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
+  // const { accessToken, refreshToken } = data;
+  const accessToken = "FAKETOKEN";
+  const refreshToken = "FAKEREFRESHTOKEN";
+  //expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
+  expires = 1500;
   const cookieString = JSON.stringify({ accessToken, expires });
 
   expires > 0
@@ -54,17 +58,17 @@ export function setToken(data: DataInfo<Date>) {
       roles
     });
   }
-
-  if (data.username && data.roles) {
-    const { username, roles } = data;
-    setSessionKey(username, roles);
-  } else {
-    const username =
-      storageSession().getItem<DataInfo<number>>(sessionKey)?.username ?? "";
-    const roles =
-      storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
-    setSessionKey(username, roles);
-  }
+  setSessionKey("xmzk", ["roles"]);
+  // if (data.username && data.roles) {
+  //   const { username, roles } = data;
+  //   setSessionKey(username, roles);
+  // } else {
+  //   const username =
+  //     storageSession().getItem<DataInfo<number>>(sessionKey)?.username ?? "";
+  //   const roles =
+  //     storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? [];
+  //   setSessionKey(username, roles);
+  // }
 }
 
 /** 删除`token`以及key值为`user-info`的session信息 */
