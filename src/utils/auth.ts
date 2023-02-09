@@ -17,6 +17,7 @@ export interface DataInfo<T> {
 
 export const sessionKey = "user-info";
 export const TokenKey = "authorized-token";
+export const UserNameKey = "username";
 
 /** 获取`token` */
 export function getToken(): DataInfo<number> {
@@ -33,7 +34,6 @@ export function getToken(): DataInfo<number> {
  * 将`username`、`roles`、`refreshToken`、`expires`这四条信息放在key值为`user-info`的sessionStorage里（浏览器关闭自动销毁）
  */
 export function setToken(data: DataInfo<Date>) {
-  console.log(data);
   let expires = 0;
   // const { accessToken, refreshToken } = data;
   const accessToken = "FAKETOKEN";
@@ -41,7 +41,7 @@ export function setToken(data: DataInfo<Date>) {
   //expires = new Date(data.expires).getTime(); // 如果后端直接设置时间戳，将此处代码改为expires = data.expires，然后把上面的DataInfo<Date>改成DataInfo<number>即可
   expires = 1500;
   const cookieString = JSON.stringify({ accessToken, expires });
-
+  console.log(data);
   expires > 0
     ? Cookies.set(TokenKey, cookieString, {
         expires: (expires - Date.now()) / 86400000
@@ -81,3 +81,9 @@ export function removeToken() {
 export const formatToken = (token: string): string => {
   return "Bearer " + token;
 };
+
+/** 设置UserName */
+export function setUserName(name: string) {
+  // 设置用户名
+  Cookies.set(UserNameKey, name);
+}

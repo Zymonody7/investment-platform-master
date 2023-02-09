@@ -1,7 +1,8 @@
 // import "@/utils/sso";
+import Cookies from "js-cookie";
 import { getConfig } from "@/config";
 import NProgress from "@/utils/progress";
-import { sessionKey, type DataInfo } from "@/utils/auth";
+import { UserNameKey } from "@/utils/auth";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import {
@@ -13,7 +14,7 @@ import {
 import {
   ascending,
   initRouter,
-  isOneOfArray,
+  // isOneOfArray,
   getHistoryMode,
   findRouteByPath,
   handleAliveRoute,
@@ -21,7 +22,7 @@ import {
   formatFlatteningRoutes
 } from "./utils";
 import { buildHierarchyTree } from "@/utils/tree";
-import { isUrl, openLink, storageSession } from "@pureadmin/utils";
+import { isUrl, openLink } from "@pureadmin/utils";
 
 import remainingRouter from "./modules/remaining";
 
@@ -104,7 +105,10 @@ router.beforeEach((to: toRouteType, _from, next) => {
       handleAliveRoute(newMatched);
     }
   }
-  const userInfo = storageSession().getItem<DataInfo<number>>(sessionKey);
+  // 权限验证改为验证用户名
+  // 直接获取 cookie
+  // const userInfo = storageSession().getItem(UserNameKey) ?? "";\
+  const userInfo = Cookies.get(UserNameKey) ?? "";
   NProgress.start();
   const externalLink = isUrl(to?.name as string);
   if (!externalLink) {
@@ -121,9 +125,10 @@ router.beforeEach((to: toRouteType, _from, next) => {
   }
   if (userInfo) {
     // 无权限跳转403页面
-    if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
-      next({ path: "/error/403" });
-    }
+    // 权限验证暂时删除
+    // if (to.meta?.roles && !isOneOfArray(to.meta?.roles, userInfo?.roles)) {
+    //   next({ path: "/error/403" });
+    // }
     if (_from?.name) {
       // name为超链接
       if (externalLink) {
