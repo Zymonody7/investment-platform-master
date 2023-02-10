@@ -8,7 +8,12 @@ import { storageSession } from "@pureadmin/utils";
 import { refreshTokenApi, zsLogin } from "@/api/user";
 import { zsUserResult, RefreshTokenResult } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
-import { setToken, removeToken, UserNameKey, setUserName } from "@/utils/auth";
+import {
+  removeToken,
+  UserNameKey,
+  setUserName,
+  JSessionKey
+} from "@/utils/auth";
 
 export let userName = "";
 
@@ -36,8 +41,11 @@ export const useUserStore = defineStore({
         zsLogin(data)
           .then(data => {
             if (data) {
+              console.log(data);
               // 后端自动set-cookie设置Session 无需Token
               // setToken(data.data);
+              // 设置Session
+              storageSession().setItem(JSessionKey, Cookies.get("JSESSIONID"));
               // 在这里我们需要设置 user 的 username
               setUserName(userName);
               resolve(data);
@@ -53,7 +61,7 @@ export const useUserStore = defineStore({
       this.username = "";
       this.roles = [];
       // 清除Cookie
-      Cookies.set(UserNameKey, "");
+      Cookies.remove(UserNameKey);
       removeToken();
       useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
       resetRouter();
@@ -65,7 +73,7 @@ export const useUserStore = defineStore({
         refreshTokenApi(data)
           .then(data => {
             if (data) {
-              setToken(data.data);
+              // setToken(data.data);
               resolve(data);
             }
           })

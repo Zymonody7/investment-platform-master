@@ -38,7 +38,7 @@ export const refreshTokenApi = (data?: object) => {
   return http.request<RefreshTokenResult>("post", "/refreshToken", { data });
 };
 
-/** zs登录返回值 */
+/** zs用户接口返回值 */
 export type zsUserResult = {
   msg: string;
   code: number;
@@ -46,7 +46,14 @@ export type zsUserResult = {
 
 /** zs登录接口 */
 export const zsLogin = (data?: object) => {
-  return http.request<zsUserResult>("post", baseUrlApi("admin/user/login"), {
+  return http.request<zsUserResult>("post", baseUrlApi("/admin/user/login"), {
+    data
+  });
+};
+
+/** zs登录接口 */
+export const zsRegister = (data?: object) => {
+  return http.request<zsUserResult>("post", baseUrlApi("/admin/user/save"), {
     data
   });
 };
