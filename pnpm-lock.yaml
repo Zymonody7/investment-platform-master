@@ -1,6 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
+  "@amap/amap-jsapi-loader": ^1.0.1
   "@commitlint/cli": 13.1.0
   "@commitlint/config-conventional": 13.1.0
   "@iconify-icons/ep": ^1.2.7
@@ -81,6 +82,7 @@ specifiers:
   vue-types: ^4.2.1
 
 dependencies:
+  "@amap/amap-jsapi-loader": 1.0.1
   "@pureadmin/descriptions": 1.1.1_element-plus@2.2.27
   "@pureadmin/table": 1.9.0_element-plus@2.2.27
   "@pureadmin/utils": 1.8.5_echarts@5.4.1+vue@3.2.45
@@ -163,6 +165,13 @@ devDependencies:
   vue-tsc: 1.0.13_typescript@4.9.4
 
 packages:
+  /@amap/amap-jsapi-loader/1.0.1:
+    resolution:
+      {
+        integrity: sha512-nPyLKt7Ow/ThHLkSvn2etQlUzqxmTVgK7bIgwdBRTg2HK5668oN7xVxkaiRe3YZEzGzfV2XgH5Jmu2T73ljejw==
+      }
+    dev: false
+
   /@ampproject/remapping/2.2.0:
     resolution:
       {

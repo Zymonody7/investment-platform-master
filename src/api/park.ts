@@ -59,7 +59,7 @@ export type ParkCreateRequest = {
   img: string;
 };
 const getList = async () => {
-  return await http.request<ParkResult>("get", baseUrlApi("admin/park/list"));
+  return await http.request<ParkResult>("get", baseUrlApi("/admin/park/list"));
 };
 // export const edit = async (data: ParkType) => {
 //   return await http.request<any>("post", baseUrlApi("admin/park/update"), {
@@ -69,10 +69,10 @@ const getList = async () => {
 
 // Todo:
 const edit = async (id: string, data: ParkCreateRequest): Promise<ParkType> => {
-  return http.request<any>("post", baseUrlApi("admin/park/update"), { data });
+  return http.request<any>("post", baseUrlApi("/admin/park/update"), { data });
 };
 const create = async (data: ParkCreateRequest): Promise<ParkType> => {
-  return http.request<any>("post", baseUrlApi("admin/park/update"), { data });
+  return http.request<any>("post", baseUrlApi("/admin/park/update"), { data });
 };
 export default {
   getList,
