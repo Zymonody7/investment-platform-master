@@ -22,6 +22,16 @@ export default [
     }
   },
   {
+    path: "/updateUserInfo",
+    name: "UpdateUserInfo",
+    component: () => import("@/views/userInfo/updateUserInfo/index.vue"),
+    meta: {
+      title: "修改密码",
+      showLink: false,
+      rank: 103
+    }
+  },
+  {
     path: "/redirect",
     component: Layout,
     meta: {

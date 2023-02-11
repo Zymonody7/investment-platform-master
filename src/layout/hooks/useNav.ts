@@ -58,6 +58,11 @@ export function useNav() {
     useUserStoreHook().logOut();
   }
 
+  /** 前往修改密码页面 */
+  function toUpdateUserInfo() {
+    router.push("/updateUserInfo");
+  }
+
   function backHome() {
     router.push("/welcome");
   }
@@ -126,6 +131,7 @@ export function useNav() {
     device,
     layout,
     logout,
+    toUpdateUserInfo,
     routers,
     $storage,
     backHome,
