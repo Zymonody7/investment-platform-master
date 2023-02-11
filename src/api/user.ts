@@ -57,3 +57,15 @@ export const zsRegister = (data?: object) => {
     data
   });
 };
+
+/** zs修改密码接口 */
+export const zsChangeUserInfo = (data?: object) => {
+  return http.request<any>("post", baseUrlApi("/admin/user/update"), {
+    data
+  });
+};
+
+/** zs根据session获取用户信息接口 */
+export const zsGetUserInfo = () => {
+  return http.request<any>("get", baseUrlApi("/admin/user/info"));
+};

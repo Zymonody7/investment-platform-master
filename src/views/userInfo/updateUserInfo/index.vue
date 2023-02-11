@@ -3,23 +3,21 @@ import Motion from "./utils/motion";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { loginRules } from "./utils/rule";
-import { initRouter } from "@/router/utils";
 import { useNav } from "@/layout/hooks/useNav";
 import type { FormInstance } from "element-plus";
 import { useLayout } from "@/layout/hooks/useLayout";
-import { useUserStoreHook } from "@/store/modules/user";
 import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, toRaw, onMounted, onBeforeUnmount } from "vue";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
-
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
 import Lock from "@iconify-icons/ri/lock-fill";
-import User from "@iconify-icons/ri/user-3-fill";
+import { zsChangeUserInfo } from "@/api/user";
+import { useUserStoreHook } from "@/store/modules/user";
 
 defineOptions({
-  name: "Login"
+  name: "UpdateUserInfo"
 });
 const router = useRouter();
 const loading = ref(false);
@@ -33,48 +31,52 @@ dataThemeChange();
 const { title } = useNav();
 
 const ruleForm = reactive({
-  username: "",
-  password: ""
+  password1: "",
+  password2: ""
 });
 
-const onLogin = async (formEl: FormInstance | undefined) => {
+const onUpdatePassword = async (formEl: FormInstance | undefined) => {
   loading.value = true;
+  await useUserStoreHook().getUserInfo();
   if (!formEl) return;
-  await formEl.validate((valid, fields) => {
+  if (ruleForm.password1 !== ruleForm.password2) {
+    message("两次密码输入不一致", { type: "error" });
+    loading.value = false;
+    return;
+  }
+  await formEl.validate(valid => {
     if (valid) {
-      useUserStoreHook()
-        .loginByUsername({
-          username: ruleForm.username,
-          password: ruleForm.password
-        })
-        .then(res => {
-          if (res.msg === "登陆成功") {
-            // 获取后端路由
-            initRouter().then(() => {
-              message("登录成功", { type: "success" });
-              router.push("/");
-            });
-          } else {
+      zsChangeUserInfo({
+        uid: useUserStoreHook().$state.uid,
+        username: useUserStoreHook().$state.username,
+        password: ruleForm.password1
+      })
+        .then(data => {
+          if (data.code === 0) {
+            message("密码修改成功", { type: "success" });
             loading.value = false;
-            message(res.msg, { type: "error" });
+            router.push("/");
+          } else {
+            message(`${data.msg}`, { type: "error" });
+            loading.value = false;
           }
+        })
+        .catch(err => {
+          message(`${err}`, { type: "error" });
+          loading.value = false;
         });
-    } else {
-      loading.value = false;
-      return fields;
     }
   });
-  useUserStoreHook().getUserInfo();
 };
-/** 跳转注册页面 */
-function toRegister() {
-  router.push("/register");
+
+function toHome() {
+  router.push("/");
 }
 
 /** 使用公共函数，避免`removeEventListener`失效 */
 function onkeypress({ code }: KeyboardEvent) {
   if (code === "Enter") {
-    onLogin(ruleFormRef.value);
+    onUpdatePassword(ruleFormRef.value);
   }
 }
 
@@ -122,46 +124,57 @@ onBeforeUnmount(() => {
                 :rules="[
                   {
                     required: true,
-                    message: '请输入账号',
+                    message: '请输入密码',
                     trigger: 'blur'
                   }
                 ]"
-                prop="username"
+                prop="password1"
               >
                 <el-input
                   clearable
-                  v-model="ruleForm.username"
-                  placeholder="用户名"
-                  :prefix-icon="useRenderIcon(User)"
-                />
-              </el-form-item>
-            </Motion>
-
-            <Motion :delay="150">
-              <el-form-item prop="password">
-                <el-input
-                  clearable
                   show-password
-                  v-model="ruleForm.password"
+                  v-model="ruleForm.password1"
                   placeholder="密码"
                   :prefix-icon="useRenderIcon(Lock)"
                 />
               </el-form-item>
             </Motion>
+
+            <Motion :delay="150">
+              <el-form-item
+                :rules="[
+                  {
+                    required: true,
+                    message: '请重复密码',
+                    trigger: 'blur'
+                  }
+                ]"
+                prop="password2"
+              >
+                <el-input
+                  clearable
+                  show-password
+                  v-model="ruleForm.password2"
+                  placeholder="重复密码"
+                  :prefix-icon="useRenderIcon(Lock)"
+                />
+              </el-form-item>
+            </Motion>
+
             <Motion :delay="250">
               <el-button
                 class="w-full mt-4"
                 size="default"
                 type="primary"
                 :loading="loading"
-                @click="onLogin(ruleFormRef)"
+                @click="onUpdatePassword(ruleFormRef)"
               >
-                登录
+                修改密码
               </el-button>
             </Motion>
           </el-form>
           <Motion :delay="300">
-            <el-link type="primary" @click="toRegister">注册</el-link>
+            <el-link type="primary" @click="toHome">返回首页</el-link>
           </Motion>
         </div>
       </div>
