@@ -1,5 +1,6 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "./utils";
+import { ResType } from "./types";
 export type ParkType = {
   // 园区id
   id: string;
@@ -24,19 +25,21 @@ export type ParkType = {
   description: string;
   // 图片地址
   img: string;
+  imgList: string[];
 };
 export type ParkResult = {
   msg: string;
   code: number;
-  page: {
-    totalCount: number;
+  pageInfo: {
+    total: number;
     pageSize: number;
     totalPage: number;
-    currPage: number;
-    list: ParkType[];
+    current: number;
+    records: ParkType[];
   };
 };
 export type ParkCreateRequest = {
+  parkId: string;
   // 园区名称
   parkName: string;
   // 经度
@@ -57,25 +60,36 @@ export type ParkCreateRequest = {
   description: string;
   // 图片地址
   img: string;
+  imgList: string[];
 };
-const getList = async () => {
-  return await http.request<ParkResult>("get", baseUrlApi("/admin/park/list"));
+const getList = async (page: number) => {
+  return await http.request<ParkResult>(
+    "get",
+    baseUrlApi("/admin/park/page?curPage=" + page)
+  );
 };
-// export const edit = async (data: ParkType) => {
-//   return await http.request<any>("post", baseUrlApi("admin/park/update"), {
-//     data
-//   });
-// }
+const edit = async (data: ParkCreateRequest): Promise<ResType> => {
+  return http.request<ResType>("post", baseUrlApi("/admin/park/update"), {
+    data
+  });
+};
+const create = async (data: ParkCreateRequest): Promise<ResType> => {
+  console.log(data);
 
-// Todo:
-const edit = async (id: string, data: ParkCreateRequest): Promise<ParkType> => {
-  return http.request<any>("post", baseUrlApi("/admin/park/update"), { data });
+  return http.request<ResType>("post", baseUrlApi("/admin/park/save"), {
+    data
+  });
 };
-const create = async (data: ParkCreateRequest): Promise<ParkType> => {
-  return http.request<any>("post", baseUrlApi("/admin/park/update"), { data });
+const deletePark = async (data: number[]) => {
+  console.log(data);
+
+  return http.request<ResType>("post", baseUrlApi("/admin/park/delete"), {
+    data
+  });
 };
 export default {
   getList,
   edit,
-  create
+  create,
+  deletePark
 };

@@ -1,5 +1,10 @@
 export interface Editable<R, T> {
-  create(request: R): Promise<T>;
+  create(request: R): Promise<T | ResType>;
 
-  edit(id: string, request: R): Promise<T>;
+  edit(request: R): Promise<T | ResType>;
+}
+
+export interface ResType {
+  msg: string;
+  code: number;
 }

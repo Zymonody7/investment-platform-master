@@ -22,16 +22,13 @@ export function initMap(
         map.addControl(new AMap.Scale()); //显示当前地图中心的比例尺
       });
       // 单击
-      // map.on("click", e => {
-      //   // console.log(e);
-      //   state.current_position = [e.lnglat.KL, e.lnglat.kT];
-      //   state.path.push([e.lnglat.KL, e.lnglat.kT]);
-      //   addMarker();
+      map.on("click", e => {
+        // console.log(e);
+        console.log(e.lnglat.getLng() + "," + e.lnglat.getLat());
 
-      //   addPolyLine();
-      //   // 地图按照适合展示图层内数据的缩放等级展示
-      //   // map.setFitView();
-      // });
+        // 地图按照适合展示图层内数据的缩放等级展示
+        // map.setFitView();
+      });
 
       // 实例化点标记
       function addMarker() {

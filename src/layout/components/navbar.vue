@@ -47,7 +47,7 @@ const {
       <el-dropdown trigger="click">
         <span class="el-dropdown-link navbar-bg-hover select-none">
           <img
-            src="https://avatars.githubusercontent.com/u/44761321?v=4"
+            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
             :style="avatarsStyle"
           />
           <p v-if="username" class="dark:text-white">{{ username }}</p>
