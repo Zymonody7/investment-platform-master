@@ -3,11 +3,9 @@ import Motion from "./utils/motion";
 import { useRouter } from "vue-router";
 import { message } from "@/utils/message";
 import { loginRules } from "./utils/rule";
-import { initRouter } from "@/router/utils";
 import { useNav } from "@/layout/hooks/useNav";
 import type { FormInstance } from "element-plus";
 import { useLayout } from "@/layout/hooks/useLayout";
-import { useUserStoreHook } from "@/store/modules/user";
 import { bg, avatar, illustration } from "./utils/static";
 import { useRenderIcon } from "@/components/ReIcon/src/hooks";
 import { ref, reactive, toRaw, onMounted, onBeforeUnmount } from "vue";
@@ -17,9 +15,11 @@ import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
 import Lock from "@iconify-icons/ri/lock-fill";
 import User from "@iconify-icons/ri/user-3-fill";
+import UID from "@iconify-icons/ri/voiceprint-fill";
+import { zsRegister } from "@/api/user";
 
 defineOptions({
-  name: "Login"
+  name: "Register"
 });
 const router = useRouter();
 const loading = ref(false);
@@ -33,48 +33,41 @@ dataThemeChange();
 const { title } = useNav();
 
 const ruleForm = reactive({
+  uid: "",
   username: "",
   password: ""
 });
 
-const onLogin = async (formEl: FormInstance | undefined) => {
+const onRegister = async (formEl: FormInstance | undefined) => {
   loading.value = true;
   if (!formEl) return;
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(valid => {
     if (valid) {
-      useUserStoreHook()
-        .loginByUsername({
-          username: ruleForm.username,
-          password: ruleForm.password
-        })
+      zsRegister(ruleForm)
         .then(res => {
-          if (res.msg === "登陆成功") {
-            // 获取后端路由
-            initRouter().then(() => {
-              message("登录成功", { type: "success" });
-              router.push("/");
-            });
+          if (res.code === 0) {
+            router.push("/login");
+            message(res.msg, { type: "success" });
           } else {
-            loading.value = false;
             message(res.msg, { type: "error" });
           }
+          loading.value = false;
+        })
+        .catch(err => {
+          message(`发生异常:${err}`, { type: "error" });
         });
-    } else {
-      loading.value = false;
-      return fields;
     }
   });
-  useUserStoreHook().getUserInfo();
 };
-/** 跳转注册页面 */
-function toRegister() {
-  router.push("/register");
+
+function toLogin() {
+  router.push("/login");
 }
 
 /** 使用公共函数，避免`removeEventListener`失效 */
 function onkeypress({ code }: KeyboardEvent) {
   if (code === "Enter") {
-    onLogin(ruleFormRef.value);
+    onRegister(ruleFormRef.value);
   }
 }
 
@@ -130,6 +123,26 @@ onBeforeUnmount(() => {
               >
                 <el-input
                   clearable
+                  v-model="ruleForm.uid"
+                  placeholder="账号"
+                  :prefix-icon="useRenderIcon(UID)"
+                />
+              </el-form-item>
+            </Motion>
+
+            <Motion :delay="125">
+              <el-form-item
+                :rules="[
+                  {
+                    required: true,
+                    message: '请输入用户名',
+                    trigger: 'blur'
+                  }
+                ]"
+                prop="username"
+              >
+                <el-input
+                  clearable
                   v-model="ruleForm.username"
                   placeholder="用户名"
                   :prefix-icon="useRenderIcon(User)"
@@ -148,20 +161,21 @@ onBeforeUnmount(() => {
                 />
               </el-form-item>
             </Motion>
+
             <Motion :delay="250">
               <el-button
                 class="w-full mt-4"
                 size="default"
                 type="primary"
                 :loading="loading"
-                @click="onLogin(ruleFormRef)"
+                @click="onRegister(ruleFormRef)"
               >
-                登录
+                注册
               </el-button>
             </Motion>
           </el-form>
           <Motion :delay="300">
-            <el-link type="primary" @click="toRegister">注册</el-link>
+            <el-link type="primary" @click="toLogin">登录</el-link>
           </Motion>
         </div>
       </div>

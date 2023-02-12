@@ -4,10 +4,10 @@ export default {
   path: "/park",
   name: "Park",
   component: Layout,
-  redirect: "/park",
+  redirect: "/park/index",
   meta: {
-    icon: "homeFilled",
-    title: "park",
+    icon: "ParkIcon",
+    title: "厂房管理",
     rank: 0
   },
   children: [
@@ -16,7 +16,15 @@ export default {
       name: "Park",
       component: () => import("@/views/park/index.vue"),
       meta: {
-        title: "park"
+        title: "厂房列表"
+      }
+    },
+    {
+      path: "/parkpreview",
+      name: "Park1",
+      component: () => import("@/views/park/image.vue"),
+      meta: {
+        title: "厂房预览"
       }
     }
   ]

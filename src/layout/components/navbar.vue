@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import Search from "./search/index.vue";
-import Notice from "./notice/index.vue";
-import mixNav from "./sidebar/mixNav.vue";
 import { useNav } from "@/layout/hooks/useNav";
 import Breadcrumb from "./sidebar/breadCrumb.vue";
-import topCollapse from "./sidebar/topCollapse.vue";
 import LogoutCircleRLine from "@iconify-icons/ri/logout-circle-r-line";
+import Password from "@iconify-icons/ri/lock-password-fill";
 import Setting from "@iconify-icons/ri/settings-3-line";
 
 const {
@@ -16,7 +14,8 @@ const {
   pureApp,
   username,
   avatarsStyle,
-  toggleSideBar
+  toggleSideBar,
+  toUpdateUserInfo
 } = useNav();
 </script>
 
@@ -42,12 +41,12 @@ const {
       <!-- 菜单搜索 -->
       <Search />
       <!-- 通知 -->
-      <Notice id="header-notice" />
+      <!--      <Notice id="header-notice" />-->
       <!-- 退出登录 -->
       <el-dropdown trigger="click">
         <span class="el-dropdown-link navbar-bg-hover select-none">
           <img
-            src="https://avatars.githubusercontent.com/u/44761321?v=4"
+            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
             :style="avatarsStyle"
           />
           <p v-if="username" class="dark:text-white">{{ username }}</p>
@@ -60,6 +59,10 @@ const {
                 style="margin: 5px"
               />
               退出系统
+            </el-dropdown-item>
+            <el-dropdown-item @click="toUpdateUserInfo">
+              <IconifyIconOffline :icon="Password" style="margin: 5px" />
+              修改密码
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>

@@ -5,20 +5,28 @@ import { userType } from "./types";
 import { routerArrays } from "@/layout/types";
 import { router, resetRouter } from "@/router";
 import { storageSession } from "@pureadmin/utils";
-import { refreshTokenApi, zsLogin } from "@/api/user";
+import { refreshTokenApi, zsLogin, zsGetUserInfo } from "@/api/user";
 import { zsUserResult, RefreshTokenResult } from "@/api/user";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
-import { setToken, removeToken, UserNameKey, setUserName } from "@/utils/auth";
+import {
+  removeToken,
+  UserNameKey,
+  setUserName,
+  JSessionKey
+} from "@/utils/auth";
 
 export let userName = "";
 
 export const useUserStore = defineStore({
   id: "pure-user",
   state: (): userType => ({
+    uid: null,
     // 用户名
-    username: storageSession().getItem(UserNameKey) ?? ""
-    // // 页面级别权限
-    // roles: storageSession().getItem<DataInfo<number>>(sessionKey)?.roles ?? []
+    username: null,
+    // 用户创建时间
+    createTime: null,
+    // 用户更新时间
+    updateTime: null
   }),
   actions: {
     /** 存储用户名 */
@@ -38,6 +46,8 @@ export const useUserStore = defineStore({
             if (data) {
               // 后端自动set-cookie设置Session 无需Token
               // setToken(data.data);
+              // 设置Session
+              storageSession().setItem(JSessionKey, Cookies.get("JSESSIONID"));
               // 在这里我们需要设置 user 的 username
               setUserName(userName);
               resolve(data);
@@ -51,13 +61,30 @@ export const useUserStore = defineStore({
     /** 前端登出（不调用接口） */
     logOut() {
       this.username = "";
-      this.roles = [];
+      // this.roles = [];
       // 清除Cookie
-      Cookies.set(UserNameKey, "");
+      Cookies.remove(UserNameKey);
       removeToken();
       useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
       resetRouter();
       router.push("/login");
+    },
+    /** 获取用户信息 */
+    async getUserInfo() {
+      return new Promise((resolve, reject) => {
+        zsGetUserInfo()
+          .then(data => {
+            console.log(data);
+            this.username = data.userInfo.username;
+            this.uid = data.userInfo.uid;
+            this.createTime = data.userInfo.createTime;
+            this.updateTime = data.userInfo.updateTime;
+            resolve(data);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
     },
     /** 刷新`token` */
     async handRefreshToken(data) {
@@ -65,7 +92,7 @@ export const useUserStore = defineStore({
         refreshTokenApi(data)
           .then(data => {
             if (data) {
-              setToken(data.data);
+              // setToken(data.data);
               resolve(data);
             }
           })

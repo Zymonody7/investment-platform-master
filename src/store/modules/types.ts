@@ -38,5 +38,7 @@ export type setType = {
 
 export type userType = {
   username?: string;
-  roles?: Array<string>;
+  uid?: string;
+  createTime?: string;
+  updateTime?: string;
 };

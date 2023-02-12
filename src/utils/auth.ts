@@ -18,6 +18,7 @@ export interface DataInfo<T> {
 export const sessionKey = "user-info";
 export const TokenKey = "authorized-token";
 export const UserNameKey = "username";
+export const JSessionKey = "JSESSIONID";
 
 /** 获取`token` */
 export function getToken(): DataInfo<number> {
