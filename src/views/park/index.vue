@@ -6,7 +6,7 @@ import { onMounted, ref, reactive } from "vue";
 import { useEditDialog } from "@/hooks/useEditDialog";
 import editDialog from "./editDialog.vue";
 import parkApi from "@/api/park";
-import { initMap } from "@/utils/map/utils";
+import { initMap, setNewMarker } from "@/utils/map/utils";
 import { message } from "@/utils/message";
 import { useParkStore } from "@/store/modules/park";
 
@@ -29,6 +29,11 @@ const renderParkTable = async (page: number) => {
   parkTable.value = data.pageInfo.records;
 };
 const searchByName = ref("");
+// 简单筛选
+const handleFilter = (value: string, row) => {
+  return row.parkType === value;
+};
+// 增加或修改
 const handleSearchByName = () => {};
 const {
   showDialog,
@@ -59,21 +64,36 @@ const handleDelete = async (id: string | Set<string>) => {
   const dbBack = await parkApi.deletePark(delRequest);
   if (dbBack.code === 0) {
     message("删除成功", { type: "success" });
+  } else {
+    message(dbBack.msg, { type: "error" });
   }
   await renderParkTable(parkStore.currentPage);
 };
 // 下拉表格
 const expands = ref([]);
-const handleExpand = (row, expandedRows) => {
+const mapRef = ref();
+let AMap: any;
+const handleExpand = async (row, expandedRows) => {
   expands.value = [];
-
   if (expandedRows.length > 0) {
     row ? expands.value.push(row.id) : "";
   }
-  if (expandedRows.length && row.longitude) {
-    initMap("map", row.longitude, row.latitude);
+  if (expandedRows.length && row.longitude && row.latitude) {
+    AMap = await initMap();
+    if (isNaN(Number(row.longitude))) {
+      mapRef.value.style.display = "none";
+      return;
+    }
+    const map = new AMap.Map("map", {
+      //设置地图容器id
+      viewMode: "3D", //是否为3D地图模式
+      zoom: 15, //初始化地图级别
+      center: [row.longitude, row.latitude] //初始化地图中心点位置
+    });
+    setNewMarker(row.longitude, row.latitude, map);
+  } else {
+    mapRef.value.style.display = "none";
   }
-  console.log(expandedRows, row);
 };
 // 分页
 const parkStore = useParkStore();
@@ -159,10 +179,10 @@ const parkStore = useParkStore();
                 >
                   <img :src="item" class="h-40 object-cover" />
                 </div>
-                <div class="max-w-lg">
+                <div class="max-w-lg mb-6">
                   <div>{{ props.row.description }}</div>
                 </div>
-                <div id="map" class="my-6 h-96 w-7/12" />
+                <div ref="mapRef" id="map" class="my-6 h-96 w-7/12" />
               </div>
             </div>
           </Motion>
@@ -187,6 +207,7 @@ const parkStore = useParkStore();
           { text: '写字楼', value: '写字楼' },
           { text: '其他', value: '其他' }
         ]"
+        :filter-method="handleFilter"
         filter-placement="bottom-end"
       >
         <template #default="scope">
@@ -197,8 +218,18 @@ const parkStore = useParkStore();
           >
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" width="200" label="创建时间" />
-      <el-table-column prop="updateTime" width="200" label="更新时间" />
+      <el-table-column
+        sortable
+        prop="createTime"
+        width="200"
+        label="创建时间"
+      />
+      <el-table-column
+        sortable
+        prop="updateTime"
+        width="200"
+        label="更新时间"
+      />
       <el-table-column width="140">
         <template #default="scope">
           <el-button size="small" @click="handleEdit(scope)">编辑</el-button>

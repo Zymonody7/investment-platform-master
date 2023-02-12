@@ -14,6 +14,15 @@ module.exports = {
         text_color_primary: "var(--el-text-color-primary)",
         text_color_regular: "var(--el-text-color-regular)",
         text_color_disabled: "var(--el-text-color-disabled)"
+      },
+      height: {
+        100: "25rem",
+        120: "30rem",
+        140: "35rem",
+        160: "40rem",
+        180: "45rem",
+        // 190: "47.5rem",
+        200: "50rem"
       }
     }
   }

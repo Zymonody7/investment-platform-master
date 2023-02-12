@@ -22,7 +22,7 @@ export default {
     {
       path: "/parkpreview",
       name: "Park1",
-      component: () => import("@/views/park/index.vue"),
+      component: () => import("@/views/park/image.vue"),
       meta: {
         title: "厂房预览"
       }
