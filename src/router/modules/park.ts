@@ -7,7 +7,7 @@ export default {
   redirect: "/park/index",
   meta: {
     icon: "ParkIcon",
-    title: "厂房管理",
+    title: "园区管理",
     rank: 0
   },
   children: [
@@ -16,7 +16,7 @@ export default {
       name: "Park",
       component: () => import("@/views/park/index.vue"),
       meta: {
-        title: "厂房列表"
+        title: "园区列表"
       }
     },
     {
@@ -24,7 +24,7 @@ export default {
       name: "Park1",
       component: () => import("@/views/park/image.vue"),
       meta: {
-        title: "厂房预览"
+        title: "园区预览"
       }
     }
   ]

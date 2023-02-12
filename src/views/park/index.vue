@@ -9,6 +9,7 @@ import parkApi from "@/api/park";
 import { initMap, setNewMarker } from "@/utils/map/utils";
 import { message } from "@/utils/message";
 import { useParkStore } from "@/store/modules/park";
+import { svg } from "./utils/loadingSvg";
 
 defineOptions({
   name: "Park"
@@ -17,7 +18,10 @@ const parkTable = ref([]);
 onMounted(async () => {
   await renderParkTable(parkStore.currentPage);
 });
+const loading = ref(true);
 const renderParkTable = async (page: number) => {
+  loading.value = true;
+
   const data = await parkStore.fetchParkList(page);
 
   data.pageInfo.records.forEach(item => {
@@ -27,6 +31,7 @@ const renderParkTable = async (page: number) => {
     }
   });
   parkTable.value = data.pageInfo.records;
+  loading.value = false;
 };
 const searchByName = ref("");
 // 简单筛选
@@ -100,7 +105,13 @@ const parkStore = useParkStore();
 </script>
 
 <template>
-  <el-card class="relative pb-12 box-border">
+  <el-card
+    class="relative pb-12 box-border"
+    element-loading-svg-view-box="-10, -10, 50, 50"
+    v-loading="loading"
+    :element-loading-svg="svg"
+    element-loading-background="rgba(0, 0, 0, 0.4)"
+  >
     <el-card>
       <el-row :gutter="20">
         <el-col :span="10">

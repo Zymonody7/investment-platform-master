@@ -5,7 +5,7 @@ import { baseUrlApi } from "./utils";
 export const getList = async () => {
   return await http.request(
     "get",
-    baseUrlApi("admin/enterprise/findEnterpriseAll")
+    baseUrlApi("/admin/enterprise/findEnterpriseAll")
   );
 };
 
