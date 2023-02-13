@@ -33,12 +33,22 @@
           <el-form-item>
             <el-button type="primary" @click="handleOccupancy"
               >入驻查询</el-button
-            >
+            > </el-form-item
+          ><el-form-item>
+            <el-button type="primary" @click="exportToExcel"> 导出</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button @click="handleUpload">上传</el-button>
           </el-form-item>
         </div>
       </el-form>
     </div>
-    <el-table :data="enterpriseList" style="width: 1200px" height="600px">
+    <el-table
+      :data="enterpriseList"
+      style="width: 1200px"
+      height="600px"
+      id="oIncomTable"
+    >
       <el-table-column
         v-for="item in enterpriseLabelData"
         :key="item.prop"
@@ -60,6 +70,7 @@
       class="occupancy-table"
       v-model="dialogVisiable"
       title="入驻规模"
+      :before-close="handleClose"
     >
       <el-table :data="occupancyList">
         <el-table-column
@@ -67,24 +78,62 @@
           :key="item.prop"
           :prop="item.prop"
           :label="item.label"
-          :before-close="handleClose"
         />
       </el-table>
+    </el-dialog>
+    <el-dialog
+      v-model="uploadDialogVisiable"
+      title="上传文件"
+      :before-close="handleClose"
+    >
+      <el-upload
+        class="upload-demo"
+        drag
+        action="http://42.192.172.214:8484/api/file/upLoadEnterprise"
+        multiple
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-remove="beforeRemove"
+        :limit="3"
+        :on-exceed="handleExceed"
+        :on-success="handleSuccess"
+      >
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">
+          Drop file here or <em>click to upload</em>
+        </div>
+        <template #tip>
+          <div class="el-upload__tip">
+            jpg/png files with a size less than 500kb
+          </div>
+        </template>
+      </el-upload>
     </el-dialog>
   </div>
 </template>
 
-<script>
-import { onMounted, reactive, ref } from "vue";
+<script lang="ts">
+import {
+  onMounted,
+  reactive,
+  ref,
+  getCurrentInstance,
+  defineComponent
+} from "vue";
 import {
   getList,
   getInfoByEnterpriseId,
   findEnterprise,
   getOccupancySize
 } from "../../api/enterprise";
+import FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+import { ElMessage, ElMessageBox } from "element-plus";
+import type { UploadProps } from "element-plus";
 
-export default {
+export default defineComponent({
   setup() {
+    const { proxy } = getCurrentInstance();
     // 企业列表
     const enterpriseList = ref([]);
     // 企业表单每列名称
@@ -228,11 +277,80 @@ export default {
     // 入驻对话框关闭
     const handleClose = () => {
       dialogVisiable.value = false;
+      uploadDialogVisiable.value = false;
     };
     // 页面挂载时
     onMounted(() => {
       getEnterpriseAll();
     });
+    // 将el-table转excel下载至本地
+    const exportToExcel = () => {
+      // 检验是否导入成功
+      // console.log('XLSX',XLSX,FileSaver)
+      // 使用 this.$nextTick 是在dom元素都渲染完成之后再执行
+      proxy.$nextTick(function () {
+        // 设置导出的内容是否只做解析，不进行格式转换     false：要解析， true:不解析
+        const xlsxParam = { raw: true };
+        const wb = XLSX.utils.table_to_book(
+          document.querySelector("#oIncomTable"),
+          xlsxParam
+        );
+        // 导出excel文件名
+        const fileName = "enterprise" + new Date().getTime() + ".xlsx";
+
+        const wbout = XLSX.write(wb, {
+          bookType: "xlsx",
+          bookSST: true,
+          type: "array"
+        });
+        try {
+          // 下载保存文件
+          FileSaver.saveAs(
+            new Blob([wbout], { type: "application/octet-stream" }),
+            fileName
+          );
+        } catch (e) {
+          if (typeof console !== "undefined") {
+            console.log(e, wbout);
+          }
+        }
+        return wbout;
+      });
+    };
+    // 上传文件的对话框是否可见
+    const uploadDialogVisiable = ref(false);
+    // 处理excel上传
+    const handleUpload = () => {
+      uploadDialogVisiable.value = true;
+    };
+    const handleRemove: UploadProps["onRemove"] = () => {
+      ElMessage({
+        message: "取消文件上传",
+        type: "error"
+      });
+    };
+    const handlePreview: UploadProps["onPreview"] = () => {
+      ElMessage({
+        message: "该文件已选择",
+        type: "info"
+      });
+    };
+
+    const handleExceed: UploadProps["onExceed"] = () => {
+      ElMessage.warning("最多可上传三个文件！");
+    };
+    const beforeRemove: UploadProps["beforeRemove"] = () => {
+      return ElMessageBox.confirm("确定取消该文件的上传吗").then(
+        () => true,
+        () => false
+      );
+    };
+    const handleSuccess = () => {
+      ElMessage({
+        message: "文件上传成功",
+        type: "success"
+      });
+    };
     // 数据返回
     return {
       enterpriseLabelData,
@@ -245,10 +363,18 @@ export default {
       occupancyLabelData,
       occupancyList,
       dialogVisiable,
-      handleClose
+      handleClose,
+      exportToExcel,
+      handleUpload,
+      uploadDialogVisiable,
+      handlePreview,
+      handleRemove,
+      handleExceed,
+      beforeRemove,
+      handleSuccess
     };
   }
-};
+});
 </script>
 
 <style scoped>
@@ -268,7 +394,8 @@ export default {
 }
 
 .right {
-  width: 90px;
+  width: 300px;
   margin-top: 5px;
+  display: flex;
 }
 </style>
