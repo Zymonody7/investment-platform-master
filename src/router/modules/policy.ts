@@ -7,7 +7,7 @@ export default {
   redirect: "/policy",
   meta: {
     icon: "ep:document",
-    title: "政策",
+    title: "企业政策",
     rank: 0
   },
   children: [
@@ -16,7 +16,7 @@ export default {
       name: "Policy",
       component: () => import("@/views/policy/index.vue"),
       meta: {
-        title: "政策"
+        title: "企业政策"
       }
     }
   ]

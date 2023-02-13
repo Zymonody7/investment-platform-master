@@ -6,8 +6,8 @@ export default {
   component: Layout,
   redirect: "/enterprise",
   meta: {
-    icon: "ep:office-building",
-    title: "企业",
+    icon: "tabler:brand-office",
+    title: "企业管理",
     rank: 0
   },
   children: [
@@ -16,7 +16,15 @@ export default {
       name: "Enterprise",
       component: () => import("@/views/enterprise/index.vue"),
       meta: {
-        title: "企业"
+        title: "企业列表"
+      }
+    },
+    {
+      path: "/occupancy",
+      name: "Occupancy",
+      component: () => import("@/views/enterprise/occupancy.vue"),
+      meta: {
+        title: "入驻情况"
       }
     }
   ]

@@ -1,48 +1,45 @@
 <template>
   <div class="enterprise-table">
-    <div class="enterprise-header">
-      <el-form :inline="true" :model="formInline">
-        <div class="left">
-          <el-form-item>
-            <el-select
-              v-model="searchType"
-              class="m-2"
-              placeholder="搜索类型"
-              size="small"
-              style="width: 100px"
-            >
-              <el-option
-                v-for="item in selectOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-input v-model="formInline.id" placeholder="请输入id" />
-          </el-form-item>
-          <el-form-item>
-            <el-input v-model="formInline.name" placeholder="请输入名称" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSearch">搜索</el-button>
-          </el-form-item>
-        </div>
-        <div class="right">
-          <el-form-item>
-            <el-button type="primary" @click="handleOccupancy"
-              >入驻查询</el-button
-            > </el-form-item
-          ><el-form-item>
-            <el-button type="primary" @click="exportToExcel"> 导出</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button @click="handleUpload">上传</el-button>
-          </el-form-item>
-        </div>
-      </el-form>
-    </div>
+    <el-row :gutter="24" class="enterprise-header">
+      <el-col :span="2.5">
+        <el-select
+          v-model="searchType"
+          placeholder="搜索类型"
+          style="width: 100px"
+        >
+          <el-option
+            v-for="item in selectOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-col>
+      <el-col :span="4">
+        <el-input
+          v-model="formInline.id"
+          placeholder="请输入id"
+          style="padding-right: 0; padding-left: 0"
+        />
+      </el-col>
+      <el-col :span="4">
+        <el-input
+          v-model="formInline.name"
+          placeholder="请输入名称"
+          style="padding-right: 0; padding-left: 0"
+        />
+      </el-col>
+      <el-col :span="2">
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+      </el-col>
+      <el-col :span="8" />
+      <el-col :span="1.5">
+        <el-button @click="exportToExcel"> 导出</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button @click="handleUpload">上传</el-button>
+      </el-col>
+    </el-row>
     <el-table
       :data="enterpriseList"
       style="width: 1200px"
@@ -66,21 +63,6 @@
         </template>
       </el-table-column> -->
     </el-table>
-    <el-dialog
-      class="occupancy-table"
-      v-model="dialogVisiable"
-      title="入驻规模"
-      :before-close="handleClose"
-    >
-      <el-table :data="occupancyList">
-        <el-table-column
-          v-for="item in occupancyLabelData"
-          :key="item.prop"
-          :prop="item.prop"
-          :label="item.label"
-        />
-      </el-table>
-    </el-dialog>
     <el-dialog
       v-model="uploadDialogVisiable"
       title="上传文件"
@@ -123,8 +105,7 @@ import {
 import {
   getList,
   getInfoByEnterpriseId,
-  findEnterprise,
-  getOccupancySize
+  findEnterprise
 } from "../../api/enterprise";
 import FileSaver from "file-saver";
 import * as XLSX from "xlsx";
@@ -249,34 +230,9 @@ export default defineComponent({
         return item;
       });
     };
-    // 入驻表单是否可见
-    const dialogVisiable = ref(false);
-    // 入驻列表
-    const occupancyList = ref([]);
-    // 入驻表单每列名称
-    const occupancyLabelData = [
-      {
-        prop: "rules",
-        label: "rules"
-      },
-      {
-        prop: "normals",
-        label: "normals"
-      },
-      {
-        prop: "time",
-        label: "time"
-      }
-    ];
-    // 入驻查询
-    const handleOccupancy = async () => {
-      dialogVisiable.value = true;
-      const res = await getOccupancySize();
-      occupancyList.value = res.count;
-    };
+
     // 入驻对话框关闭
     const handleClose = () => {
-      dialogVisiable.value = false;
       uploadDialogVisiable.value = false;
     };
     // 页面挂载时
@@ -359,10 +315,6 @@ export default defineComponent({
       handleSearch,
       selectOptions,
       searchType,
-      handleOccupancy,
-      occupancyLabelData,
-      occupancyList,
-      dialogVisiable,
       handleClose,
       exportToExcel,
       handleUpload,
@@ -378,6 +330,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.enterprise-header {
+  margin: 5px;
+}
+
 .table {
   width: 90%;
   overflow: hidden;
@@ -389,13 +345,13 @@ export default defineComponent({
   justify-content: space-between;
 }
 
-.left {
+/* .left {
   width: 700px;
 }
 
 .right {
-  width: 300px;
+  width: 180px;
   margin-top: 5px;
   display: flex;
-}
+} */
 </style>
