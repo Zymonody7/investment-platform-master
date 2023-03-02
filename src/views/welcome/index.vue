@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import screenfull from "screenfull";
 import { useWelcomeStoreHook } from "@/store/modules/welcome";
 import router from "@/router";
 defineOptions({
@@ -11,6 +12,7 @@ const full = router.currentRoute.value.name == "WelcomeFull";
 const className = full ? "fullHomeBox" : "homeBox";
 function toHome() {
   router.push("/");
+  screenfull.exit();
 }
 </script>
 
@@ -19,7 +21,9 @@ function toHome() {
     <iframe :src="HomeUrl" style="height: 100%; width: 100%" />
   </div>
   <div class="backButton">
-    <el-button type="primary" @click="toHome" v-if="full">返回首页</el-button>
+    <el-button circle @click="toHome" v-if="full"
+      ><el-icon><Back style="transform: scale(1.5)" /></el-icon
+    ></el-button>
   </div>
 </template>
 
