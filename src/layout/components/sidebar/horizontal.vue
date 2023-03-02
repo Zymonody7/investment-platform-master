@@ -6,7 +6,9 @@ import { useNav } from "@/layout/hooks/useNav";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import LogoutCircleRLine from "@iconify-icons/ri/logout-circle-r-line";
 import Setting from "@iconify-icons/ri/settings-3-line";
+import FullScreen from "@iconify-icons/ri/fullscreen-fill";
 import Password from "@iconify-icons/ri/lock-password-fill";
+import router from "@/router";
 
 const menuRef = ref();
 
@@ -33,6 +35,10 @@ watch(
     menuSelect(route.path, routers);
   }
 );
+
+function toFullScreen() {
+  router.push("/WelcomeFull");
+}
 </script>
 
 <template>
@@ -60,11 +66,16 @@ watch(
       />
     </el-menu>
     <div class="horizontal-header-right">
-      <!-- 菜单搜索 -->
+      <span
+        class="set-icon navbar-bg-hover"
+        title="打开项目配置"
+        @click="toFullScreen"
+      >
+        <IconifyIconOffline :icon="FullScreen" />
+      </span>
+
       <Search />
-      <!-- 通知 -->
-      <!--      <Notice id="header-notice" />-->
-      <!-- 退出登录 -->
+
       <el-dropdown trigger="click">
         <span class="el-dropdown-link navbar-bg-hover">
           <img

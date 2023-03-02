@@ -12,6 +12,16 @@ export default [
     }
   },
   {
+    path: "/WelcomeFull",
+    name: "WelcomeFull",
+    component: () => import("@/views/welcome/index.vue"),
+    meta: {
+      title: "大屏首页",
+      showLink: false,
+      rank: 101
+    }
+  },
+  {
     path: "/register",
     name: "Register",
     component: () => import("@/views/register/index.vue"),

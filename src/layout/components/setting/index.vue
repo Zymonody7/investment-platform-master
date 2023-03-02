@@ -27,6 +27,7 @@ import { useAppStoreHook } from "@/store/modules/app";
 import { toggleTheme } from "@pureadmin/theme/dist/browser-utils";
 import { useMultiTagsStoreHook } from "@/store/modules/multiTags";
 import { useDataThemeChange } from "@/layout/hooks/useDataThemeChange";
+import { useWelcomeStoreHook } from "@/store/modules/welcome";
 
 import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
@@ -228,10 +229,14 @@ onBeforeMount(() => {
     settings.tabsVal && tagsChange();
   });
 });
+
+const welcomeStore = useWelcomeStoreHook();
 </script>
 
 <template>
   <panel>
+    <el-divider>大屏地址</el-divider>
+    <el-input class="fullWelcomeURL" v-model="welcomeStore.welcomeURL" />
     <el-divider>主题</el-divider>
     <el-switch
       v-model="dataTheme"
@@ -526,5 +531,10 @@ onBeforeMount(() => {
       border: 1px solid #ddd;
     }
   }
+}
+
+.fullWelcomeURL {
+  margin: 20px 0;
+  padding: 0 10px;
 }
 </style>
