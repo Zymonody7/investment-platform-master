@@ -62,6 +62,7 @@ specifiers:
   rollup-plugin-visualizer: ^5.8.3
   sass: ^1.56.1
   sass-loader: ^13.2.0
+  screenfull: ^6.0.2
   script-loader: ^0.7.2
   stylelint: ^14.3.0
   stylelint-config-html: ^1.0.0
@@ -113,6 +114,7 @@ dependencies:
   pinia: registry.npmmirror.com/pinia/2.0.30_hmuptsblhheur2tugfgucj7gc4
   qs: registry.npmmirror.com/qs/6.11.0
   responsive-storage: registry.npmmirror.com/responsive-storage/2.1.0
+  screenfull: 6.0.2
   vue: registry.npmmirror.com/vue/3.2.47
   vue-json-excel: registry.npmmirror.com/vue-json-excel/0.3.0
   vue-router: registry.npmmirror.com/vue-router/4.1.6_vue@3.2.47
@@ -492,6 +494,14 @@ packages:
     dependencies:
       pinia: registry.npmmirror.com/pinia/2.0.30_hmuptsblhheur2tugfgucj7gc4
     dev: true
+
+  /screenfull/6.0.2:
+    resolution:
+      {
+        integrity: sha512-AQdy8s4WhNvUZ6P8F6PB21tSPIYKniic+Ogx0AacBMjKP1GUHN2E9URxQHtCusiwxudnCKkdy4GrHXPPJSkCCw==
+      }
+    engines: { node: ^14.13.1 || >=16.0.0 }
+    dev: false
 
   /tslib/2.3.0:
     resolution:

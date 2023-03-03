@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import screenfull from "screenfull";
 import Search from "../search/index.vue";
 import { ref, watch, nextTick } from "vue";
 import SidebarItem from "./sidebarItem.vue";
@@ -38,6 +39,9 @@ watch(
 
 function toFullScreen() {
   router.push("/WelcomeFull");
+  if (screenfull.isEnabled) {
+    screenfull.request();
+  }
 }
 </script>
 

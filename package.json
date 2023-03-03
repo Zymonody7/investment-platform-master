@@ -52,6 +52,7 @@
     "pinia": "^2.0.28",
     "qs": "^6.11.0",
     "responsive-storage": "^2.1.0",
+    "screenfull": "^6.0.2",
     "vue": "^3.2.45",
     "vue-json-excel": "^0.3.0",
     "vue-router": "^4.1.6",
