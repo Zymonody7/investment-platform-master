@@ -17,19 +17,21 @@ function toHome() {
 </script>
 
 <template>
-  <div :class="className">
-    <iframe :src="HomeUrl" style="height: 100%; width: 100%" />
-  </div>
-  <div class="backButton">
-    <el-button circle @click="toHome" v-if="full"
-      ><el-icon><Back style="transform: scale(1.5)" /></el-icon
-    ></el-button>
+  <div style="margin: 0">
+    <div :class="className">
+      <iframe :src="HomeUrl" style="height: 100%; width: 100%" />
+    </div>
+    <div class="backButton">
+      <el-button circle @click="toHome" v-if="full"
+        ><el-icon><Back style="transform: scale(1.5)" /></el-icon
+      ></el-button>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .homeBox {
-  height: 85vh;
+  height: 93vh;
   box-sizing: border-box;
 }
 

@@ -17,6 +17,7 @@ import dayIcon from "@/assets/svg/day.svg?component";
 import darkIcon from "@/assets/svg/dark.svg?component";
 import Lock from "@iconify-icons/ri/lock-fill";
 import User from "@iconify-icons/ri/user-3-fill";
+import screenfull from "screenfull";
 
 defineOptions({
   name: "Login"
@@ -52,7 +53,8 @@ const onLogin = async (formEl: FormInstance | undefined) => {
             // 获取后端路由
             initRouter().then(() => {
               message("登录成功", { type: "success" });
-              router.push("/");
+              router.push("/WelcomeFull");
+              screenfull.request();
             });
           } else {
             loading.value = false;
