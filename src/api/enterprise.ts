@@ -2,10 +2,17 @@ import { http } from "@/utils/http";
 import axios from "axios";
 import { baseUrlApi } from "./utils";
 
-export const getList = async () => {
+// export const getList = async () => {
+//   return await http.request(
+//     "get",
+//     baseUrlApi("/admin/enterprise/findEnterpriseAll"),
+//   );
+// };
+
+export const getList = async (page, limit) => {
   return await http.request(
     "get",
-    baseUrlApi("/admin/enterprise/findEnterpriseAll")
+    baseUrlApi("/admin/enterprise/list?page=" + page + "&limit=" + limit)
   );
 };
 

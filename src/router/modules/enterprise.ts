@@ -14,7 +14,7 @@ export default {
     {
       path: "/enterprise",
       name: "Enterprise",
-      component: () => import("@/views/enterprise/index.vue"),
+      component: () => import("@/views/enterprise/index2.vue"),
       meta: {
         title: "企业列表"
       }

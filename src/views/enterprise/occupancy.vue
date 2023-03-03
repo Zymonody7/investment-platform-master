@@ -1,8 +1,10 @@
 <template>
-  <el-card style="height: 600px; width: 1200px">
-    <h1>入驻规模</h1>
-    <div id="occupancyChart" style="height: 560px" />
-  </el-card>
+  <el-row>
+    <el-card style="height: 650px; width: 1200px">
+      <h1>入驻规模</h1>
+      <div id="occupancyChart" style="height: 600px" />
+    </el-card>
+  </el-row>
 </template>
 
 <script lang="ts">
