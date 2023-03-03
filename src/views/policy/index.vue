@@ -1,22 +1,37 @@
 <template>
-  <div class="table">
+  <el-row class="table">
     <el-form :inline="true">
       <el-form-item label="园区查询" style="width: 300px">
-        <el-input placeholder="请输入园区名称" v-model="parkName" />
+        <el-input placeholder="请输入园区名称" v-model="parkName">
+          <template #append>
+            <el-button @click="handleSearch">
+              <IconifyIconOnline
+                icon="material-symbols:search-rounded"
+                width="20px"
+                height="20px"
+            /></el-button>
+          </template>
+        </el-input>
       </el-form-item>
-      <el-form-item>
+
+      <!-- <el-form-item>
         <el-button type="primary" @click="handleSearch">查询</el-button>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
-    <el-table :data="policyList">
+
+    <el-table
+      :data="policyList"
+      @row-click="showContent"
+      :stripe="true"
+      height="580px"
+    >
       <el-table-column
         v-for="item in policyLabelData"
         :key="item.prop"
         :prop="item.prop"
         :label="item.label"
-        :width="item.width ? item.width : 120"
-        show-overflow-tooltip="true"
-        header-align="center"
+        :width="item.width ? item.width : 200"
+        :show-overflow-tooltip="true"
       />
       <el-table-column fixed="right" label="操作" width="100">
         <template #default="scope">
@@ -79,9 +94,14 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-  </div>
+    <div
+      id="policyPage"
+      v-html="str"
+      v-show="contentDialogVisiable"
+      @click="closePage"
+    />
+  </el-row>
 </template>
-
 <script>
 import { onMounted, ref, reactive } from "vue";
 import { getPolicyInfo, searchByName, update } from "../../api/policy";
@@ -98,22 +118,17 @@ export default {
       {
         prop: "title",
         label: "名称",
-        width: 500
+        width: 800
       },
       {
         prop: "time",
         label: "时间"
-      },
-      {
+      }
+      /*       {
         prop: "content",
         label: "内容",
         width: 800
-      },
-      {
-        prop: "contentPlain",
-        label: "内容(样式)",
-        width: 800
-      }
+      } */
     ];
     // 政策列表
     const policyList = ref([]);
@@ -124,15 +139,19 @@ export default {
     };
     // 园区查询
     const handleSearch = async () => {
-      const res = await searchByName(parkName.value);
-      const park = res.show[0];
-      ElMessageBox.alert(
-        `经度:${park.longitude},纬度:${park.latitude}`,
-        "查询结果",
-        {
-          confirmButtonText: "确定"
-        }
-      ).then(() => (parkName.value = ""));
+      if (parkName.value == "") {
+        return ElMessageBox.alert("请输入园区").then();
+      } else {
+        const res = await searchByName(parkName.value);
+        const park = res.show[0];
+        ElMessageBox.alert(
+          `经度:${park.longitude},纬度:${park.latitude}`,
+          "查询结果",
+          {
+            confirmButtonText: "确定"
+          }
+        ).then(() => (parkName.value = ""));
+      }
     };
     //政策修改对话框
     const policyUpdateFrom = reactive({
@@ -141,8 +160,11 @@ export default {
       time: "",
       content: ""
     });
+    // 点击编辑并不跳转政策页的控制量
+    const editBtn = ref("false");
     // 政策修改
     const handleEdit = row => {
+      editBtn.value = "true";
       dialogVisiable.value = true;
       // 浅拷贝
       Object.assign(policyUpdateFrom, row);
@@ -154,6 +176,7 @@ export default {
     //对话框关闭
     const handleClose = () => {
       dialogVisiable.value = false;
+      editBtn.value = "false";
     };
     // 修改确定
     const confirmUpdate = async () => {
@@ -169,6 +192,22 @@ export default {
         dialogVisiable.value = false;
       }
     };
+    // 点击某一行时展示政策完整内容
+    const showContent = row => {
+      console.log(editBtn.value);
+      if (editBtn.value == "true") {
+        return;
+      }
+
+      // 打开新页面
+      const newPage = window.open("about:blank", "_blank");
+      newPage.document.write(row.contentPlain);
+      // if (!(editBtn.value)) {
+      //   // 打开新页面
+      //   var newPage = window.open("about:blank", "_blank");
+      //   newPage.document.write(row.contentPlain);
+      // }
+    };
     // 页面挂载时
     onMounted(() => {
       getPolicyList();
@@ -183,7 +222,8 @@ export default {
       dialogVisiable,
       policyUpdateFrom,
       handleClose,
-      confirmUpdate
+      confirmUpdate,
+      showContent
     };
   }
 };

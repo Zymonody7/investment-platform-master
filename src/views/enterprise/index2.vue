@@ -1,49 +1,9 @@
 <template>
-  <div class="enterprise-table">
+  <el-card class="enterprise-table" style="height: 83vh">
     <el-card>
-      <!--       <el-row :gutter="24" class="enterprise-header">
-        <el-col :span="2.5">
-          <el-select
-            v-model="searchType"
-            placeholder="搜索类型"
-            style="width: 100px"
-          >
-            <el-option
-              v-for="item in selectOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-col>
-        <el-col :span="4">
-          <el-input
-            v-model="formInline.id"
-            placeholder="请输入id"
-            style="padding-right: 0; padding-left: 0"
-          />
-        </el-col>
-        <el-col :span="4">
-          <el-input
-            v-model="formInline.name"
-            placeholder="请输入名称"
-            style="padding-right: 0; padding-left: 0"
-          />
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-        </el-col>
-        <el-col :span="8" />
-        <el-col :span="1.5">
-          <el-button @click="exportToExcel"> 导出</el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button @click="handleUpload">上传</el-button>
-        </el-col>
-      </el-row> -->
-      <el-row :gutter="20">
-        <el-col :span="10">
-          <el-input v-model="searchByType">
+      <el-row :gutter="24">
+        <el-col :span="8">
+          <el-input v-model="inputContent">
             <template #prepend>
               <el-select
                 style="width: 100px"
@@ -59,7 +19,7 @@
               </el-select>
             </template>
             <template #append>
-              <el-button @click="handleSearchByName">
+              <el-button @click="handleSearch">
                 <IconifyIconOnline
                   icon="material-symbols:search-rounded"
                   width="20px"
@@ -68,13 +28,19 @@
             </template>
           </el-input>
         </el-col>
+        <el-col :span="11" />
+        <el-col :span="2">
+          <el-button @click="exportToExcel" type="primary"> 导出</el-button>
+        </el-col>
+        <el-col :span="2">
+          <el-button @click="handleUpload" type="primary">上传</el-button>
+        </el-col>
       </el-row>
     </el-card>
-
     <el-table
       :data="enterpriseList"
       style="width: 1200px"
-      height="600px"
+      height="65vh"
       id="oIncomTable"
     >
       <el-table-column
@@ -84,15 +50,6 @@
         :label="item.label"
         :width="item.width ? item.width : 120"
       />
-
-      <!--       <el-table-column fixed="right" label="Operations" width="120">
-        <template #default>
-          <el-button link type="primary" size="small" @click="handleClick"
-            >删除</el-button
-          >
-          <el-button link type="primary" size="small">编辑</el-button>
-        </template>
-      </el-table-column> -->
     </el-table>
     <el-dialog
       v-model="uploadDialogVisiable"
@@ -122,7 +79,16 @@
         </template>
       </el-upload>
     </el-dialog>
-  </div>
+    <div class="example-pagination-block" style="height: 15vh">
+      <el-pagination
+        background
+        @current-change="changePage"
+        layout="prev, pager, next"
+        :total="20"
+        :page-size="5"
+      />
+    </div>
+  </el-card>
 </template>
 
 <script lang="ts">
@@ -201,39 +167,53 @@ export default defineComponent({
       }
     ]);
     // 获取所有企业信息
-    const getEnterpriseAll = async () => {
-      const res = await getList();
-      // console.log(res);
-      timeHandler(res);
-      enterpriseList.value = res;
-    };
-    // 搜索框内容
-    const formInline = ref({
-      id: "",
-      name: ""
-    });
+    // const getEnterpriseAll = async () => {
+    //   const res = await getList();
+    //   console.log(res);
+    //   timeHandler(res);
+    //   enterpriseList.value = res;
+    // };
     // 搜索类型
     const selectOptions = [
       {
-        value: "企业",
-        label: "企业"
+        value: "企业id",
+        label: "企业id"
       },
       {
-        value: "园区",
-        label: "园区"
+        value: "企业名称",
+        label: "企业名称"
+      },
+      {
+        value: "园区名称",
+        label: "园区名称"
       }
     ];
+    // 选择的搜索类型
     const searchType = ref("");
+    //搜索数据对象
+    const searchByTypeInput = ref({
+      id: "",
+      name: ""
+    });
+    // 存储文本框的值 根据搜索类型 赋给对象的不同属性
+    const inputContent = ref("");
     //搜索功能
     const handleSearch = async () => {
-      if (searchType.value === "企业") {
-        const res = await getInfoByEnterpriseId(formInline.value);
-        // console.log(res);
+      if (searchType.value === "") {
+        return ElMessageBox.alert("请选择搜索类型").then();
+      } else if (searchType.value === "企业id") {
+        searchByTypeInput.value.id = inputContent.value;
+        const res = await getInfoByEnterpriseId(searchByTypeInput.value);
         timeHandler(res.data.EnterpriseEntity);
         enterpriseList.value = res.data.EnterpriseEntity;
-      } else if (searchType.value === "园区") {
-        const res = await findEnterprise(formInline.value);
-        // console.log(res);
+      } else if (searchType.value === "企业名称") {
+        searchByTypeInput.value.name = inputContent.value;
+        const res = await getInfoByEnterpriseId(searchByTypeInput.value);
+        timeHandler(res.data.EnterpriseEntity);
+        enterpriseList.value = res.data.EnterpriseEntity;
+      } else if (searchType.value === "园区名称") {
+        searchByTypeInput.value.name = inputContent.value;
+        const res = await findEnterprise(searchByTypeInput.value);
         timeHandler(res.data.data);
         enterpriseList.value = res.data.data;
       }
@@ -262,13 +242,13 @@ export default defineComponent({
       });
     };
 
-    // 入驻对话框关闭
+    // 上传对话框关闭
     const handleClose = () => {
       uploadDialogVisiable.value = false;
     };
     // 页面挂载时
     onMounted(() => {
-      getEnterpriseAll();
+      changePage(1);
     });
     // 将el-table转excel下载至本地
     const exportToExcel = () => {
@@ -338,11 +318,19 @@ export default defineComponent({
         type: "success"
       });
     };
+    // 页码参数
+    const curPage = ref(1);
+    // 改变页数
+    const changePage = async n => {
+      curPage.value = n;
+      const res = await getList(curPage.value, 5);
+      timeHandler(res.page.list);
+      enterpriseList.value = res.page.list;
+    };
     // 数据返回
     return {
       enterpriseLabelData,
       enterpriseList,
-      formInline,
       handleSearch,
       selectOptions,
       searchType,
@@ -354,7 +342,10 @@ export default defineComponent({
       handleRemove,
       handleExceed,
       beforeRemove,
-      handleSuccess
+      handleSuccess,
+      searchByTypeInput,
+      inputContent,
+      changePage
     };
   }
 });
@@ -376,13 +367,21 @@ export default defineComponent({
   justify-content: space-between;
 }
 
-/* .left {
-  width: 700px;
+.example-pagination-block + .example-pagination-block {
+  margin-top: 15px;
 }
 
-.right {
-  width: 180px;
-  margin-top: 5px;
-  display: flex;
-} */
+.example-pagination-block .example-demonstration {
+  margin-bottom: 16px;
+}
+
+.enterprise-table {
+  position: relative;
+}
+
+.example-pagination-block {
+  position: absolute;
+  right: 20px;
+  top: 78vh;
+}
 </style>
