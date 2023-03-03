@@ -50,6 +50,7 @@
     "nprogress": "^0.2.0",
     "path": "^0.12.7",
     "pinia": "^2.0.28",
+    "postcss-px-to-viewport": "^1.1.1",
     "qs": "^6.11.0",
     "responsive-storage": "^2.1.0",
     "screenfull": "^6.0.2",

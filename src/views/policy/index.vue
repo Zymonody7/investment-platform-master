@@ -1,6 +1,6 @@
 <template>
-  <el-row>
-    <el-card body-style="width:96vw;height:80vh" class="table">
+  <el-card style="height: 80vh" class="table">
+    <el-row>
       <el-form :inline="true">
         <el-form-item label="园区查询" style="width: 300px">
           <el-input placeholder="请输入园区名称" v-model="parkName">
@@ -32,9 +32,9 @@
           :prop="item.prop"
           :label="item.label"
           :show-overflow-tooltip="true"
-          :min-width="item.prop == 'title' ? 800 : auto"
+          :min-width="item.prop == 'title' ? 600 : auto"
         />
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column fixed="right" label="操作" width="70">
           <template #default="scope">
             <el-button link type="primary" @click="handleEdit(scope.row)"
               >编辑</el-button
@@ -110,8 +110,8 @@
           :page-size="10"
         />
       </div>
-    </el-card>
-  </el-row>
+    </el-row>
+  </el-card>
 </template>
 <script>
 import { onMounted, ref, reactive } from "vue";
