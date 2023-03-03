@@ -1,105 +1,116 @@
 <template>
-  <el-row class="table">
-    <el-form :inline="true">
-      <el-form-item label="园区查询" style="width: 300px">
-        <el-input placeholder="请输入园区名称" v-model="parkName">
-          <template #append>
-            <el-button @click="handleSearch">
-              <IconifyIconOnline
-                icon="material-symbols:search-rounded"
-                width="20px"
-                height="20px"
-            /></el-button>
-          </template>
-        </el-input>
-      </el-form-item>
+  <el-row>
+    <el-card body-style="width:96vw;height:80vh" class="table">
+      <el-form :inline="true">
+        <el-form-item label="园区查询" style="width: 300px">
+          <el-input placeholder="请输入园区名称" v-model="parkName">
+            <template #append>
+              <el-button @click="handleSearch">
+                <IconifyIconOnline
+                  icon="material-symbols:search-rounded"
+                  width="20px"
+                  height="20px"
+              /></el-button>
+            </template>
+          </el-input>
+        </el-form-item>
 
-      <!-- <el-form-item>
+        <!-- <el-form-item>
         <el-button type="primary" @click="handleSearch">查询</el-button>
       </el-form-item> -->
-    </el-form>
-
-    <el-table
-      :data="policyList"
-      @row-click="showContent"
-      :stripe="true"
-      height="580px"
-    >
-      <el-table-column
-        v-for="item in policyLabelData"
-        :key="item.prop"
-        :prop="item.prop"
-        :label="item.label"
-        :width="item.width ? item.width : 200"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column fixed="right" label="操作" width="100">
-        <template #default="scope">
-          <el-button link type="primary" @click="handleEdit(scope.row)"
-            >编辑</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-dialog
-      v-model="dialogVisiable"
-      :before-close="handleClose"
-      class="dialog"
-      title="政策修改"
-    >
-      <el-form :model="policyUpdateFrom">
-        <el-form-item
-          label="编号"
-          prop="id"
-          :rules="[{ required: true, message: '编号必填' }]"
-        >
-          <input type="text" v-model="policyUpdateFrom.id" />
-        </el-form-item>
-        <el-form-item
-          label="名称"
-          prop="title"
-          :rules="[{ required: true, message: '名称必填' }]"
-        >
-          <textarea class="nameTextarea" v-model="policyUpdateFrom.title" />
-        </el-form-item>
-        <el-form-item
-          label="时间"
-          prop="time"
-          :rules="[{ required: true, message: '时间必填' }]"
-        >
-          <input type="text" v-model="policyUpdateFrom.time" />
-        </el-form-item>
-        <el-form-item
-          label="内容"
-          prop="content"
-          :rules="[{ required: true, message: '内容必填' }]"
-        >
-          <textarea
-            class="contentTextarea"
-            v-model="policyUpdateFrom.content"
-          />
-        </el-form-item>
-        <el-form-item
-          label="内容(样式)"
-          prop="contentPlain"
-          :rules="[{ required: true, message: '内容(样式)必填' }]"
-        >
-          <textarea
-            class="contentTextarea"
-            v-model="policyUpdateFrom.contentPlain"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="confirmUpdate">确定</el-button>
-        </el-form-item>
       </el-form>
-    </el-dialog>
-    <div
-      id="policyPage"
-      v-html="str"
-      v-show="contentDialogVisiable"
-      @click="closePage"
-    />
+      <el-table
+        v-loading="loading"
+        :data="policyList"
+        @row-click="showContent"
+        :stripe="true"
+        style="height: 60vh"
+      >
+        <el-table-column
+          v-for="item in policyLabelData"
+          :key="item.prop"
+          :prop="item.prop"
+          :label="item.label"
+          :show-overflow-tooltip="true"
+          :min-width="item.prop == 'title' ? 800 : auto"
+        />
+        <el-table-column fixed="right" label="操作" width="100">
+          <template #default="scope">
+            <el-button link type="primary" @click="handleEdit(scope.row)"
+              >编辑</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-dialog
+        v-model="dialogVisiable"
+        :before-close="handleClose"
+        class="dialog"
+        title="政策修改"
+      >
+        <el-form :model="policyUpdateFrom">
+          <el-form-item
+            label="编号"
+            prop="id"
+            :rules="[{ required: true, message: '编号必填' }]"
+          >
+            <input type="text" v-model="policyUpdateFrom.id" />
+          </el-form-item>
+          <el-form-item
+            label="名称"
+            prop="title"
+            :rules="[{ required: true, message: '名称必填' }]"
+          >
+            <textarea class="nameTextarea" v-model="policyUpdateFrom.title" />
+          </el-form-item>
+          <el-form-item
+            label="时间"
+            prop="time"
+            :rules="[{ required: true, message: '时间必填' }]"
+          >
+            <input type="text" v-model="policyUpdateFrom.time" />
+          </el-form-item>
+          <el-form-item
+            label="内容"
+            prop="content"
+            :rules="[{ required: true, message: '内容必填' }]"
+          >
+            <textarea
+              class="contentTextarea"
+              v-model="policyUpdateFrom.content"
+            />
+          </el-form-item>
+          <el-form-item
+            label="内容(样式)"
+            prop="contentPlain"
+            :rules="[{ required: true, message: '内容(样式)必填' }]"
+          >
+            <textarea
+              class="contentTextarea"
+              v-model="policyUpdateFrom.contentPlain"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="confirmUpdate">确定</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+      <div
+        id="policyPage"
+        v-html="str"
+        v-show="contentDialogVisiable"
+        @click="closePage"
+      />
+      <div class="example-pagination-block" style="height: 10vh">
+        <el-pagination
+          background
+          @current-change="changePage"
+          layout="prev, pager, next"
+          :total="17"
+          :page-size="10"
+        />
+      </div>
+    </el-card>
   </el-row>
 </template>
 <script>
@@ -112,13 +123,11 @@ export default {
     const policyLabelData = [
       {
         prop: "id",
-        label: "编号",
-        width: 80
+        label: "编号"
       },
       {
         prop: "title",
-        label: "名称",
-        width: 800
+        label: "名称"
       },
       {
         prop: "time",
@@ -133,10 +142,10 @@ export default {
     // 政策列表
     const policyList = ref([]);
     // 获取政策列表
-    const getPolicyList = async () => {
-      const res = await getPolicyInfo({ timeout: 50000 });
-      policyList.value = policyList.value = res;
-    };
+    // const getPolicyList = async () => {
+    //   const res = await getPolicyInfo({ timeout: 50000 },page,limit);
+    //   policyList.value = policyList.value = res;
+    // };
     // 园区查询
     const handleSearch = async () => {
       if (parkName.value == "") {
@@ -208,9 +217,17 @@ export default {
       //   newPage.document.write(row.contentPlain);
       // }
     };
+    const curPage = ref(1);
+    // 改变页数
+    const changePage = async n => {
+      curPage.value = n;
+      const res = await getPolicyInfo({ timeout: 50000 }, curPage.value, 10);
+      console.log(res);
+      policyList.value = res.page.list;
+    };
     // 页面挂载时
     onMounted(() => {
-      getPolicyList();
+      changePage(1);
     });
     // 数据返回
     return {
@@ -223,7 +240,8 @@ export default {
       policyUpdateFrom,
       handleClose,
       confirmUpdate,
-      showContent
+      showContent,
+      changePage
     };
   }
 };
@@ -234,5 +252,23 @@ export default {
 .contentTextarea {
   width: 100%;
   overflow-y: scroll;
+}
+
+.example-pagination-block + .example-pagination-block {
+  margin-top: 15px;
+}
+
+.example-pagination-block .example-demonstration {
+  margin-bottom: 16px;
+}
+
+.table {
+  position: relative;
+}
+
+.example-pagination-block {
+  position: absolute;
+  top: 72vh;
+  right: 5vw;
 }
 </style>

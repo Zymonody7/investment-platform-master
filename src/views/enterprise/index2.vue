@@ -28,18 +28,18 @@
             </template>
           </el-input>
         </el-col>
-        <el-col :span="11" />
+        <el-col :span="12" />
         <el-col :span="2">
-          <el-button @click="exportToExcel" type="primary"> 导出</el-button>
+          <el-button @click="exportToExcel"> 导出</el-button>
         </el-col>
         <el-col :span="2">
-          <el-button @click="handleUpload" type="primary">上传</el-button>
+          <el-button @click="handleUpload">上传</el-button>
         </el-col>
       </el-row>
     </el-card>
     <el-table
       :data="enterpriseList"
-      style="width: 1200px"
+      style="width: auto"
       height="65vh"
       id="oIncomTable"
     >
@@ -241,15 +241,10 @@ export default defineComponent({
         return item;
       });
     };
-
     // 上传对话框关闭
     const handleClose = () => {
       uploadDialogVisiable.value = false;
     };
-    // 页面挂载时
-    onMounted(() => {
-      changePage(1);
-    });
     // 将el-table转excel下载至本地
     const exportToExcel = () => {
       // 检验是否导入成功
@@ -318,15 +313,16 @@ export default defineComponent({
         type: "success"
       });
     };
-    // 页码参数
-    const curPage = ref(1);
     // 改变页数
     const changePage = async n => {
-      curPage.value = n;
-      const res = await getList(curPage.value, 5);
+      const res = await getList(n, 5);
       timeHandler(res.page.list);
       enterpriseList.value = res.page.list;
     };
+    // 页面挂载时
+    onMounted(() => {
+      changePage(1);
+    });
     // 数据返回
     return {
       enterpriseLabelData,

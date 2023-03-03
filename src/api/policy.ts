@@ -1,10 +1,10 @@
 import { http } from "@/utils/http";
 import { baseUrlApi } from "./utils";
 
-export const getPolicyInfo = async param => {
+export const getPolicyInfo = async (param, page, limit) => {
   return await http.request(
     "get",
-    baseUrlApi("/admin/policy/getPolicyInfo"),
+    baseUrlApi("/admin/policy/list?page=" + page + "&limit=" + limit),
     param
   );
 };

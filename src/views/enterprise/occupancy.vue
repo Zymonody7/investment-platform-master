@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-card style="height: 650px; width: 1200px">
+    <el-card style="height: 650px; width: 100%">
       <h1>入驻规模</h1>
       <div id="occupancyChart" style="height: 600px" />
     </el-card>
