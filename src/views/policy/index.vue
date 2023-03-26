@@ -337,7 +337,6 @@ export default {
     };
     // 批量删除按钮动态变化
     const multipleSelection = ref(false);
-    // 获得删除行
 
     // 批量删除
     const handleDelete = async id => {
@@ -348,6 +347,13 @@ export default {
         delRequest = Array.from(id);
       }
       delRequest = delRequest.map(item => parseInt(item));
+      if (delRequest.length == 0) {
+        ElMessage({
+          message: "未选中元素",
+          type: "info"
+        });
+        return;
+      }
       const isSuccess = await deletePolicy(delRequest);
       if (isSuccess.code == 0) {
         ElMessage({

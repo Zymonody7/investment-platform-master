@@ -484,6 +484,7 @@ export default defineComponent({
       ElMessageBox.confirm("确定关闭对话框吗?")
         .then(() => {
           Object.assign(enterpriseEditFrom, enterpriseEditFromReset);
+          isEdit.value = true;
           done();
         })
         .catch(() => {
@@ -593,8 +594,6 @@ export default defineComponent({
       Object.assign(enterpriseEditFrom, row);
     };
 
-    // 获取增加/编辑表单实例
-    const clearFormContent = ref();
     // 确认更新或新增
     const confirmUpdate = async () => {
       if (isEdit.value == true) {
@@ -643,6 +642,13 @@ export default defineComponent({
         delRequest = Array.from(id);
       }
       delRequest = delRequest.map(item => parseInt(item));
+      if (delRequest.length == 0) {
+        ElMessage({
+          message: "未选中元素",
+          type: "info"
+        });
+        return;
+      }
       const isSuccess = await deleteEnterprise(delRequest);
       if (isSuccess.code == 0) {
         ElMessage({
@@ -705,8 +711,7 @@ export default defineComponent({
       getSelectionRows,
       deleteList,
       isEdit,
-      pageInfo,
-      clearFormContent
+      pageInfo
     };
   }
 });
