@@ -2,7 +2,7 @@
   <el-card style="height: 80vh" class="table">
     <el-row>
       <el-form :inline="true">
-        <el-form-item label="园区查询" style="width: 300px">
+        <el-form-item label="园区查询" style="width: 400px">
           <el-input placeholder="请输入园区名称" v-model="parkName">
             <template #append>
               <el-button @click="handleSearch">
@@ -13,6 +13,24 @@
               /></el-button>
             </template>
           </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" @click="handleCreate"> 新增 </el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            v-if="!multipleSelection"
+            type="danger"
+            @click="multipleSelection = true"
+          >
+            批量删除
+          </el-button>
+          <el-button-group v-if="multipleSelection">
+            <el-button @click="multipleSelection = false">取消</el-button>
+            <el-button type="danger" @click="handleDelete(deleteList)">
+              确认删除
+            </el-button>
+          </el-button-group>
         </el-form-item>
 
         <!-- <el-form-item>
@@ -25,7 +43,20 @@
         @row-click="showContent"
         :stripe="true"
         style="height: 60vh"
+        @selection-change="getSelectionRows"
       >
+        <el-table-column
+          align="center"
+          v-if="multipleSelection"
+          type="selection"
+          width="55"
+        />
+        <el-table-column
+          width="55"
+          v-if="!multipleSelection"
+          label="#"
+          type="expand"
+        />
         <el-table-column
           v-for="item in policyLabelData"
           :key="item.prop"
@@ -46,7 +77,7 @@
         v-model="dialogVisiable"
         :before-close="handleClose"
         class="dialog"
-        title="政策修改"
+        :title="isEdit ? '政策修改' : '政策新增'"
       >
         <el-form :model="policyUpdateFrom">
           <el-form-item
@@ -54,21 +85,33 @@
             prop="id"
             :rules="[{ required: true, message: '编号必填' }]"
           >
-            <input type="text" v-model="policyUpdateFrom.id" />
+            <input
+              type="text"
+              v-model="policyUpdateFrom.id"
+              placeholder="请输入编号"
+            />
           </el-form-item>
           <el-form-item
             label="名称"
             prop="title"
             :rules="[{ required: true, message: '名称必填' }]"
           >
-            <textarea class="nameTextarea" v-model="policyUpdateFrom.title" />
+            <textarea
+              class="nameTextarea"
+              v-model="policyUpdateFrom.title"
+              placeholder="请输入名称"
+            />
           </el-form-item>
           <el-form-item
             label="时间"
             prop="time"
             :rules="[{ required: true, message: '时间必填' }]"
           >
-            <input type="text" v-model="policyUpdateFrom.time" />
+            <input
+              type="text"
+              v-model="policyUpdateFrom.time"
+              placeholder="请输入时间"
+            />
           </el-form-item>
           <el-form-item
             label="内容"
@@ -78,6 +121,7 @@
             <textarea
               class="contentTextarea"
               v-model="policyUpdateFrom.content"
+              placeholder="请输入内容"
             />
           </el-form-item>
           <el-form-item
@@ -88,6 +132,7 @@
             <textarea
               class="contentTextarea"
               v-model="policyUpdateFrom.contentPlain"
+              placeholder="请输入内容样式"
             />
           </el-form-item>
           <el-form-item>
@@ -106,16 +151,22 @@
           background
           @current-change="changePage"
           layout="prev, pager, next"
-          :total="17"
-          :page-size="10"
+          :total="30"
+          :page-size="pageInfo.pageSize"
         />
       </div>
     </el-row>
   </el-card>
 </template>
-<script>
+<script lang="ts">
 import { onMounted, ref, reactive } from "vue";
-import { getPolicyInfo, searchByName, update } from "../../api/policy";
+import {
+  getPolicyInfo,
+  searchByName,
+  update,
+  create,
+  deletePolicy
+} from "../../api/policy";
 import { ElMessage, ElMessageBox } from "element-plus";
 export default {
   setup() {
@@ -182,24 +233,69 @@ export default {
     const parkName = ref("");
     // 政策修改对话框是否课件
     const dialogVisiable = ref(false);
-    //对话框关闭
-    const handleClose = () => {
-      dialogVisiable.value = false;
-      editBtn.value = "false";
+    //政策修改对话框
+    const policyUpdateFromReset = {
+      id: "",
+      title: "",
+      time: "",
+      content: "",
+      contentPlain: ""
     };
+    // 编辑对话框关闭
+    const handleClose = (done: () => void) => {
+      ElMessageBox.confirm("确定关闭对话框吗?")
+        .then(() => {
+          Object.assign(policyUpdateFrom, policyUpdateFromReset);
+          dialogVisiable.value = false;
+          editBtn.value = "false";
+          // 恢复默认
+          isEdit.value = true;
+          done();
+        })
+        .catch(() => {
+          // catch error
+        });
+    };
+    // 判断新增还是编辑
+    const isEdit = ref(true);
     // 修改确定
     const confirmUpdate = async () => {
-      const res = await update(policyUpdateFrom);
-      console.log(res);
-      if (res.code == 0) {
-        ElMessage({
-          showClose: true,
-          message: "修改成功",
-          type: "success"
-        });
-        getPolicyList();
-        dialogVisiable.value = false;
+      // console.log(res);
+      if (isEdit.value == true) {
+        const res = await update(policyUpdateFrom);
+        if (res.code == 0) {
+          console.log(res);
+          ElMessage({
+            message: "编辑成功",
+            type: "success"
+          });
+        } else {
+          ElMessage({
+            message: "编辑失败,请检查填写内容",
+            type: "error"
+          });
+          return;
+        }
+      } else {
+        const res = await create(policyUpdateFrom);
+        if (res.code == 0) {
+          ElMessage({
+            message: "新增成功",
+            type: "success"
+          });
+        } else {
+          ElMessage({
+            message: "新增失败,请检查填写内容",
+            type: "error"
+          });
+          return;
+        }
       }
+      Object.assign(policyUpdateFrom, policyUpdateFromReset);
+      // 恢复默认编辑状态
+      isEdit.value = true;
+      dialogVisiable.value = false;
+      changePage(pageInfo.curPage);
     };
     // 点击某一行时展示政策完整内容
     const showContent = row => {
@@ -207,7 +303,6 @@ export default {
       if (editBtn.value == "true") {
         return;
       }
-
       // 打开新页面
       const newPage = window.open("about:blank", "_blank");
       newPage.document.write(row.contentPlain);
@@ -217,14 +312,65 @@ export default {
       //   newPage.document.write(row.contentPlain);
       // }
     };
-    const curPage = ref(1);
+    const pageInfo = reactive({
+      curPage: 1,
+      totalItem: 1,
+      pageSize: 10,
+      totalPage: 1
+    });
     // 改变页数
     const changePage = async n => {
-      curPage.value = n;
-      const res = await getPolicyInfo({ timeout: 50000 }, curPage.value, 10);
-      console.log(res);
-      policyList.value = res.page.list;
+      pageInfo.curPage = n;
+      const res = await getPolicyInfo({ timeout: 50000 }, pageInfo.curPage, 10);
+      if (res.code == 0) {
+        pageInfo.totalItem = res.page.totalCount;
+        pageInfo.pageSize = res.page.pageSize;
+        pageInfo.totalPage = res.page.totalPage;
+        policyList.value = res.page.list;
+      }
     };
+
+    // 新增
+    const handleCreate = () => {
+      isEdit.value = false;
+      dialogVisiable.value = true;
+    };
+    // 批量删除按钮动态变化
+    const multipleSelection = ref(false);
+    // 获得删除行
+
+    // 批量删除
+    const handleDelete = async id => {
+      let delRequest = [];
+      if (typeof id === "string") {
+        delRequest.push(id);
+      } else {
+        delRequest = Array.from(id);
+      }
+      delRequest = delRequest.map(item => parseInt(item));
+      const isSuccess = await deletePolicy(delRequest);
+      if (isSuccess.code == 0) {
+        ElMessage({
+          message: "删除成功",
+          type: "success"
+        });
+      } else {
+        ElMessage({
+          message: "删除失败",
+          type: "error"
+        });
+      }
+      changePage(pageInfo.curPage);
+    };
+    // 删除行列表
+    const deleteList = reactive(new Set<string>());
+    const getSelectionRows = selection => {
+      deleteList.clear();
+      selection.forEach(item => {
+        deleteList.add(item.id);
+      });
+    };
+
     // 页面挂载时
     onMounted(() => {
       changePage(1);
@@ -241,7 +387,14 @@ export default {
       handleClose,
       confirmUpdate,
       showContent,
-      changePage
+      changePage,
+      handleCreate,
+      isEdit,
+      pageInfo,
+      multipleSelection,
+      handleDelete,
+      getSelectionRows,
+      deleteList
     };
   }
 };

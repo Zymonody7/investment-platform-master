@@ -8,6 +8,20 @@ import { baseUrlApi } from "./utils";
 //     baseUrlApi("/admin/enterprise/findEnterpriseAll"),
 //   );
 // };
+export type EnterpriseType = {
+  enterpriseId: string;
+  enterpriseName: string;
+  industry: string;
+  registeredCapital: string;
+  outputValue: string;
+  enterpriseType: string;
+  score: string;
+  url: string;
+  parkId: string;
+  createTime: string;
+  updateTime: string;
+  description: string;
+};
 
 export const getList = async (page, limit) => {
   return await http.request(
@@ -37,4 +51,16 @@ export const getOccupancySize = async () => {
     "get",
     baseUrlApi("/admin/enterprise/getOccupancySize")
   );
+};
+
+export const update = async (data: object) => {
+  return await http.post(baseUrlApi("/admin/enterprise/update"), { data });
+};
+
+export const deleteEnterprise = async (data: number[]) => {
+  return await http.post(baseUrlApi("/admin/enterprise/delete"), { data });
+};
+
+export const createEnterprise = async (data: object) => {
+  return await http.post(baseUrlApi("/admin/enterprise/save"), { data });
 };
