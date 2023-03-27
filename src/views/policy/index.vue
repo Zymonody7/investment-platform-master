@@ -100,6 +100,7 @@
               class="nameTextarea"
               v-model="policyUpdateFrom.title"
               placeholder="请输入名称"
+              rows="5"
             />
           </el-form-item>
           <el-form-item
@@ -122,6 +123,7 @@
               class="contentTextarea"
               v-model="policyUpdateFrom.content"
               placeholder="请输入内容"
+              rows="5"
             />
           </el-form-item>
           <el-form-item
@@ -133,6 +135,7 @@
               class="contentTextarea"
               v-model="policyUpdateFrom.contentPlain"
               placeholder="请输入内容样式"
+              rows="5"
             />
           </el-form-item>
           <el-form-item>
