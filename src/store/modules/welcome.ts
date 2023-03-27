@@ -3,7 +3,7 @@ import { store } from "@/store";
 
 export const useWelcomeStore = defineStore("welcomeURL", {
   state: () => ({
-    welcomeURL: "http://106.15.198.228:9008/"
+    welcomeURL: import.meta.env.VITE_HOME_URL
   }),
   actions: {},
   persist: {
