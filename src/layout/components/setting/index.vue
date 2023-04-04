@@ -132,6 +132,7 @@ const multiTagsCacheChange = () => {
 
 /** 清空缓存并返回登录页 */
 function onReset() {
+  router.push("/login");
   removeToken();
   storageLocal().clear();
   storageSession().clear();
@@ -141,7 +142,6 @@ function onReset() {
   useMultiTagsStoreHook().multiTagsCacheChange(MultiTagsCache);
   toggleClass(Grey, "html-grey", document.querySelector("html"));
   toggleClass(Weak, "html-weakness", document.querySelector("html"));
-  router.push("/login");
   useMultiTagsStoreHook().handleTags("equal", [...routerArrays]);
   resetRouter();
 }

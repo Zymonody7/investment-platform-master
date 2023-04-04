@@ -46,7 +46,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
       proxy: {
         "^/api/.*": {
           // 这里填写后端地址
-          target: "http://42.192.172.214:8484/api",
+          target: "http://139.224.239.85:9007/api",
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, "")
         }
